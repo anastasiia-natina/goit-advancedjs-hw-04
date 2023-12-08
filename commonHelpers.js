@@ -1,0 +1,14 @@
+import{a as L,S as f,N as m}from"./assets/vendor-bce4f116.js";(function(){const r=document.createElement("link").relList;if(r&&r.supports&&r.supports("modulepreload"))return;for(const t of document.querySelectorAll('link[rel="modulepreload"]'))n(t);new MutationObserver(t=>{for(const o of t)if(o.type==="childList")for(const s of o.addedNodes)s.tagName==="LINK"&&s.rel==="modulepreload"&&n(s)}).observe(document,{childList:!0,subtree:!0});function u(t){const o={};return t.integrity&&(o.integrity=t.integrity),t.referrerpolicy&&(o.referrerPolicy=t.referrerpolicy),t.crossorigin==="use-credentials"?o.credentials="include":t.crossorigin==="anonymous"?o.credentials="omit":o.credentials="same-origin",o}function n(t){if(t.ep)return;t.ep=!0;const o=u(t);fetch(t.href,o)}})();const $="34554984-68074c5646cb7a45ce2c04cbc",v="https://pixabay.com/api/?",w=L.create({baseURL:v,params:{key:$,image_type:"photo",orientation:"horizontal",safesearch:!0}});function p(){return w.get("",{params:{q:query,page,per_page:perPage}}).then(e=>e.data).catch(e=>(console.error(`Error fetching pictures: ${e}`),Promise.resolve([])))}const S=document.querySelector(".gallery");function P(e){console.log(e);const r=e.map(u=>{const{id:n,largeImageURL:t,webformatURL:o,tags:s,likes:y,views:g,comments:h,downloads:b}=u;return`
+        <a class="gallery__link" href="${t}">
+          <div class="gallery-item" id="${n}">
+            <img class="gallery-item__img" src="${o}" alt="${s}" loading="lazy" />
+            <div class="info">
+              <p class="info-item"><b>Likes</b>${y}</p>
+              <p class="info-item"><b>Views</b>${g}</p>
+              <p class="info-item"><b>Comments</b>${h}</p>
+              <p class="info-item"><b>Downloads</b>${b}</p>
+            </div>
+          </div>
+        </a>
+      `}).join("");S.insertAdjacentHTML("beforeend",r)}const q=document.querySelector("#search-form"),N=document.querySelector(".gallery"),c=document.querySelector(".btn-load-more");let i="",a=1,d;const l=40;q.addEventListener("submit",_);c.addEventListener("click",E);async function _(e){if(e.preventDefault(),window.scrollTo({top:0}),a=1,i=e.currentTarget.searchQuery.value.trim(),N.innerHTML="",c.classList.add("is-hidden"),i===""){M();return}try{const r=await p(i,a,l);r.totalHits===0?alertNoImagesFound():(renderQuery(r.hits),d=new f(".gallery a").refresh(),I(r),r.totalHits>l&&c.classList.remove("is-hidden"))}catch{}finally{}}async function E(){a+=1,d.destroy();try{const e=await p(i,a,l);P(e.hits),d=new f(".gallery a").refresh();const r=Math.ceil(e.totalHits/l);a>r&&(c.classList.add("is-hidden"),alertEndOfSearch())}catch(e){console.log(e)}}function I(e){m.Notify.success(`Hooray! We found ${e.totalHits} images.`)}function M(){m.Notify.failure("The search string cannot be empty. Please specify your search query.")}
+//# sourceMappingURL=commonHelpers.js.map
