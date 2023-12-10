@@ -1,5 +1,6 @@
 import { fetchPictures, createMarkup } from './fetch-images';
-import Notiflix from 'notiflix';
+import iziToast from 'izitoast';
+import 'izitoast/dist/css/iziToast.css';
 import SimpleLightbox from 'simplelightbox';
 
 import 'simplelightbox/dist/simple-lightbox.min.css';
@@ -9,21 +10,21 @@ const gallery = document.querySelector('.gallery');
 const loadMoreButton = document.querySelector('.btn-load-more');
 let query = '';
 let page = 1;
-let simpleLightBox;
+let simpleLightBox = new SimpleLightbox('.gallery a');
 const perPage = 40;
 
 searchForm.addEventListener('submit', onSearchForm);
 loadMoreButton.addEventListener('click', onLoadMoreButton);
-
+loadMoreButton.style.visibility = 'hidden';
 
 
 async function onSearchForm(event) {
   event.preventDefault();
-  window.scrollTo({ top: 0 });
   page = 1;
   query = event.currentTarget.searchQuery.value.trim();
   gallery.innerHTML = '';
-  loadMoreButton.classList.add('is-hidden');
+  searchForm.reset();
+  loadMoreButton.style.visibility = 'hidden';
 
   if (query === '') {
     alertNoEmptySearch();
@@ -34,20 +35,20 @@ async function onSearchForm(event) {
     const data = await fetchPictures(query, page, perPage);
 
     if (data.totalHits === 0) {
-      alertNoImagesFound();
-    } else {
-      renderQuery(data.hits);
+     alertNoImagesFound();
+    } {
+      createMarkup(data.hits);
 
-      simpleLightBox = new SimpleLightbox('.gallery a').refresh();
+      simpleLightBox.refresh();
 
       alertImagesFound(data);
 
       if (data.totalHits > perPage) {
-        loadMoreButton.classList.remove('is-hidden');
+        loadMoreButton.style.visibility = 'visible';
       }
     }
   } catch (error) {
-   // console.log(error);
+   console.log(error);
   } finally {
     () => {
       searchForm.reset();
@@ -68,7 +69,7 @@ async function onLoadMoreButton() {
     const totalPages = Math.ceil(data.totalHits / perPage);
 
     if (page > totalPages) {
-      loadMoreButton.classList.add('is-hidden');
+      loadMoreButton.style.visibility = 'hidden';
       alertEndOfSearch();
     }
   } catch (error) {
@@ -78,11 +79,17 @@ async function onLoadMoreButton() {
 
 
 function alertImagesFound(data) {
-  Notiflix.Notify.success(`Hooray! We found ${data.totalHits} images.`);
+  iziToast.success({
+                title: 'Wow!',
+                message: `Hooray! We found ${data.totalHits} images.`,
+                position: 'topRight',
+              });
 }
 
 function alertNoEmptySearch() {
-  Notiflix.Notify.failure(
-    'The search string cannot be empty. Please specify your search query.'
-  );
+  iziToast.error({
+                  title: 'Error!',
+                  message: 'The search string cannot be empty. Please specify your search query.',
+                  position: 'topRight',
+                });
 }
